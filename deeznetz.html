@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<LINK REL="SHORTCUT ICON" HREF="/deeznetz/favicon.ico" />
+<!-- <LINK REL="stylesheet" HREF="deezdoc.css" TYPE="text/css" MEDIA="screen" /> -->
+<style>
+div.main-title { font-family: times, Bitstream Vera Serif, Serif; font-size: 24pt; font-weight: bold; color: black; background: white; }
+div.main-byline { font-family: arial, Bitstream Vera Sans, Sans-Serif; font-size: 18pt; font-weight: bold; color: black; background: white; }
+div.main-author { font-family: arial, Bitstream Vera Sans, Sans-Serif; font-size: 14pt; font-weight: bold; color: black; background: white; }
+div.section-title { font-family: arial, Bitstream Vera Sans, Sans-Serif; font-size: 14pt; font-weight: bold; color: black; background: white; line-height: 1.5}
+div.section-text { font-family: arial, Bitstream Vera Sans, Sans-Serif; font-size: 13pt; font-weight: normal; color: black; background: white; line-height: 1.2;}
+body { margin:2cm 4cm 2cm 4cm; }
+table { margin-top: .5em; margin-bottom: .5em; border-collapse: collapse; font-family: arial, Bitstream Vera Sans, Sans-Serif; font-size: 11pt; font-weight: normal; color: black; background: white; }
+td, th { padding: .3em; border: 1px #ccc solid; } 
+pre { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -o-pre-wrap; background: #faf8f0; font-size: 12pt; display: block; padding: 1em 1em 1em 1em; border: 1px solid #bebab0; }
+</style>
+<title>DeezNetz Documentation</title>
+</head>
+<body>
+<div class="main-title">Deez Netz</div>
+<div class="main-byline">Host and Application Network Monitoring Simplified with XML and XSLT</div>
+<div class="main-author">by Linus Crawford</div>
+<p/>
+<div class="section-title">
+Prologue: Why Another Network Monitor
+</div>
+<div class="section-text">
+After everyone threw out their PERL scripted homegrown solutions from the 90's and put their faith and trust in fancy third party commercial products that subsequently got compromised and became, 'Poison Well', security attacks invited in by System Administrators who just couldn't see inside the compiled updates to know if they were being hacked or not I started thinking someone should take a big step back and write a simpler solution using this decades more popular and secure tools. Something more like the 90's but easily configured by script yet able to be edited separately for each client and more scalable to handle the bigger clouds of today. Deez Netz is the result. Anyone with basic Python skills can modify and expand the client side mechanism for generic and custom services both developed in your house to see exactly what it's doing and how, able to run CRC checks to know if it's been modified etc. Same for the server side statistics collection. The resulting reporting can be performed in Java, Python or any language capable of an XSLT stylesheet transformation. Adding Logstash, Kibana or Grafana for extra fancy graphing is optional, customization of the display to suit the scale and type of your networks even. If your net fits in one page don't use two and cut down on your SysAdmin's clicking. The perfect network monitor in my belief should have an either red or green view, is it all good or bad, then drill down to find what's bad but Deez Netz doesn't force that on anyone. SMS or emailing of alerts or status is optional.</div>
+<p/>
+
+<div class="section-title">
+Step 1: Build The Monitor Server
+</div>
+<div class="section-text">
+1.1: Install Java and Apache Tomcat.<br/>
+1.2: mkdir &quot;/usr/local/deez&quot;.<br/> 
+1.3: chown apache:apache &quot;/usr/local/deez&quot;.<br/>
+1.4: chmod 0644 &quot;/usr/local/deez&quot;.<br/>
+1.5: Deploy the DeezNetz.war application to your Tomcat server.<br/>
+</div>
+<p/>
+
+<div class="section-title">
+Step 2: Configure The Clients To Be Monitored
+</div>
+<div class="section-text">
+2.1: Log into the client to be monitored, either, 'su -', or, 'sudo bash', and become the root superuser.<br/>
+2.2: Create a directory for DeezNutz scripts and data with the command <b>mkdir /usr/share/deez</b><br/>
+2.3: Copy the scripts <b>deezcrawl.py</b>, <b>deezyall.py</b> and <b>checkDeez.py</b> from your Tomcat Application server's webapps/DeezNetz directory to the client's <b>/usr/share/deez</b> directory you just created as root.<br/>
+2.4: Run the deezyall.sh installation script as root, it will perform the following for you:<br/>
+Adds the following line in <b>/etc/services</b> if it's not in there already<br/>
+<PRE> deeznetz        8142/tcp                # DeezNetz Network Monitor </PRE>
+Creates the file <b>/lib/systemd/system/deeznetz@.service</b> with contents of:<br/><PRE>
+[Unit]
+Description=DeezNetz Network Monitor
+After=network.target deeznetz.socket
+Requires=deeznetz.socket
+
+[Service]
+Type=oneshot
+ExecStart=-/usr/share/deez/checkDeez.py
+StandardInput=socket
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+</PRE>
+Creates the file <b>/lib/systemd/system/deeznetz.socket</b> with contents of:<br/><PRE>
+[Unit]
+Description=DeezNetz Network Monitor Socket
+PartOf=deeznetz@.service
+
+[Socket]
+ListenStream=8142
+Accept=Yes
+
+[Install]
+WantedBy=multi-user.target
+</PRE>
+2.5: Run the commands, <b>systemctl enable deeznetz.socket</b> and <b>systemctl start deeznetz.socket</b> to complete our client service.<br/>
+2.6: Now we'll choose what to monitor on our client by creating an XML file named &lt;hostname&gt;.xml in /usr/share/deez by running the <b>deezcrawl.py</b> script copied there.<br/>
+2.7: Edit the &lt;hostname&gt;.xml using your favorite editor and remove anything you don't want monitored. You'll find it's in one long string and more than a little difficult to read, you can use <b>xmllint &lt;hostname&gt;.xml --format</b> command to make it human readable and easier to edit. Removing all the line endings improves performance.<br/>
+</div>
+<p/>
+
+<div class="section-title">
+Step 3: Configure The Network Sweep
+</div>
+<div class="section-text">
+3.1: Decide how often you want to sweep your network for status.<br/>
+</div>
+<p/>
+
+<b>H8 sphinxtar_AT_gmail.com for this, last update 4/24/2021.</b>
+</p>
+</body>
+</html>
+
