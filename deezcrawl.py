@@ -23,15 +23,25 @@ def checkservice(ip, port):
 
 # web service so recursively probe and add any links
 def probe(site, xdoc):
-    apage = requests.get(site)
-    xdoc.write("<url err=\""+str(apage.status_code)+"\">"+site+"</url>")
-    soup = BeautifulSoup(apage.content, features="lxml")
-    links = soup.find_all("a")
-    for link in links:
-        if link.get("href") not in hrefs and link.get("href") != site:
-            hrefs.append(link.get("href"))
-            probe(link.get("href"),0)
-
+    # change verify=True to validate certificates
+    try:
+        apage = requests.get(site, verify=False)
+        xdoc.write("<url err=\""+str(apage.status_code)+"\">"+site+"</url>")
+        soup = BeautifulSoup(apage.content, features="lxml")
+        links = soup.find_all("a")
+        for link in links:
+            if link.get("href") not in hrefs and link.get("href") != site:
+               hrefs.append(link.get("href"))
+               probe(link.get("href"),0)
+    except requests.exceptions.ConnectionError:
+        xdoc.write("<url err=\"unreachable\">"+site+"</url>")
+        return
+    except urllib3.exceptions.InsecureRequestWarning:
+        xdoc.write("<url err=\"TLSV13_ALERT_CERTIFICATE_REQUIRED)\">"+site+"</url>")
+        return
+    except:
+        xdoc.write("<url err=\"INVALID REQUEST\">"+site+"</url>")
+        return
 
 def buildXMLconfig(host):
     addr = socket.gethostbyname(host)

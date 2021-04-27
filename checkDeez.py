@@ -22,6 +22,7 @@ docs = "/usr/share/deez/"
 hostname = socket.gethostname()
 address = socket.gethostbyname(hostname)
 file = docs+hostname+'.xml'
+validateSSL = False # True will validate bad/self signed certificates
 
 def diskusage():
     global condition
@@ -61,15 +62,18 @@ def checkport(port):
 
 # web service see if we get a 200
 def checklink(link):
+    global validateSSL
     global condition
     retval = "unknown"
     try:
-        apage = requests.get(link,timeout=4.0)
+        apage = requests.get(link,timeout=4.0,verify=validateSSL)
         if apage.status_code != 200:
             condition = 1
         retval = str(apage.status_code)
     except requests.exceptions.ConnectionError:
         retval = "unreachable"
+    except requests.exceptions.SSLError:
+        retval = "bad_ssl_cert"
     return(retval)
 
 
