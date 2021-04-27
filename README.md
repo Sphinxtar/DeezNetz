@@ -13,5 +13,5 @@ You can control it all by the socket file, 'systemctl status deeznetz.socket', s
 It will respond with three levels of detail according to the command sent, you can test it with socat:<br/>
 'echo OK |socat - TCP4:127.0.0.1:8142' will return a simple XML doc of RED or GREEN if something is down or a disk > 85% full.<br/>
 'echo ERR |socat - TCP4:127.0.0.1:8142' will return a slightly more complex small XML doc detailing just the bad news.<br/>
-'echo FULL |socat - TCP4:127.0.0.1:8142' will dump everything in knows about the box with current status.<br/>
-Still working on the Network Monitor Central Command Console to utilize this on every host. All suggestions welcome. Current thought is leaning toward a Java servlet in Tomcat ui.<br/>
+'echo FULL |socat - TCP4:127.0.0.1:8142' will dump everything it knows about the box with current status.<br/>
+Still working on the Network Monitor Central Command Console to utilize this on every host and apply some XSLT. All suggestions welcome. Current thought is leaning toward a Java servlet in Tomcat ui.<br/>
