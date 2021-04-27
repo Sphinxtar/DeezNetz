@@ -1,5 +1,5 @@
 # DeezNetz
-The Deez Netz Network Monitor
+The Deez Netz Network Monitor<br/>
 Better Living With XML/XSLT
 
 Quickstart: The server has not begun but you can demo the client. 'mkdir /usr/share/deez', copy all three scripts there, 'chmod +x' and set the executable bit on all of them.<br/>
