@@ -80,7 +80,7 @@ Step 2: Build The Monitor Server
 2.2: mkdir &quot;/usr/share/deez&quot;.<br/> 
 2.3: chown apache:apache &quot;/usr/share/deez&quot;.<br/>
 2.4: chmod 0644 &quot;/usr/share/deez&quot;.<br/>
-2.5: Copy the deezNetz.py script your server's /usr/share/deez.<br/>
+2.5: Copy the <b>deezNetz.py</b> script your server's /usr/share/deez.<br/>
 2.6: Write a file of hostnames to be actively monitored one name per line with '#'s as comments to your server's /usr/share/deez directory.<br/>
 2.6 Create the systemd timer unit that will drive the deezNetz.py script to scan the servers in hostnames fetching the minimal OK - RED/GREEN output and assemble an xml file in memory of their name/status then apply deezNetz.xslt XSL style transformation to produce a deezNetz.js JavaScript/React application in /var/www/html to load in your browser.<br/>
 </div>
