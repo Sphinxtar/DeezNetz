@@ -30,25 +30,13 @@ After everyone threw out their PERL scripted homegrown solutions from the 90's a
 <p/>
 
 <div class="section-title">
-Step 1: Build The Monitor Server
-</div>
-<div class="section-text">
-1.1: Install Java and Apache Tomcat.<br/>
-1.2: mkdir &quot;/usr/local/deez&quot;.<br/> 
-1.3: chown apache:apache &quot;/usr/local/deez&quot;.<br/>
-1.4: chmod 0644 &quot;/usr/local/deez&quot;.<br/>
-1.5: Deploy the DeezNetz.war application to your Tomcat server.<br/>
-</div>
-<p/>
-
-<div class="section-title">
 Step 2: Configure The Clients To Be Monitored
 </div>
 <div class="section-text">
-2.1: Log into the client to be monitored, either, 'su -', or, 'sudo bash', and become the root superuser.<br/>
-2.2: Create a directory for DeezNutz scripts and data with the command <b>mkdir /usr/share/deez</b><br/>
-2.3: Copy the scripts <b>deezcrawl.py</b>, <b>deezyall.py</b> and <b>checkDeez.py</b> from your Tomcat Application server's webapps/DeezNetz directory to the client's <b>/usr/share/deez</b> directory you just created as root.<br/>
-2.4: Run the deezyall.sh installation script as root, it will perform the following for you:<br/>
+1.1: Log into the client to be monitored, either, 'su -', or, 'sudo bash', and become the root superuser.<br/>
+1.2: Create a directory for DeezNutz scripts and data with the command <b>mkdir /usr/share/deez</b><br/>
+1.3: Copy the scripts <b>deezcrawl.py</b>, <b>deezyall.py</b> and <b>checkDeez.py</b> from your Tomcat Application server's webapps/DeezNetz directory to the client's <b>/usr/share/deez</b> directory you just created as root.<br/>
+1.4: Run the deezyall.sh installation script as root, it will perform the following for you:<br/>
 Adds the following line in <b>/etc/services</b> if it's not in there already<br/>
 <PRE> deeznetz        8142/tcp                # DeezNetz Network Monitor </PRE>
 Creates the file <b>/lib/systemd/system/deeznetz@.service</b> with contents of:<br/><PRE>
@@ -78,14 +66,28 @@ Accept=Yes
 [Install]
 WantedBy=multi-user.target
 </PRE>
-2.5: Run the commands, <b>systemctl enable deeznetz.socket</b> and <b>systemctl start deeznetz.socket</b> to complete our client service.<br/>
-2.6: Now we'll choose what to monitor on our client by creating an XML file named &lt;hostname&gt;.xml in /usr/share/deez by running the <b>deezcrawl.py</b> script copied there.<br/>
-2.7: Edit the &lt;hostname&gt;.xml using your favorite editor and remove anything you don't want monitored. You'll find it's in one long string and more than a little difficult to read, you can use <b>xmllint &lt;hostname&gt;.xml --format</b> command to make it human readable and easier to edit. Removing all the line endings improves performance.<br/>
+1.5: Run the commands, <b>systemctl enable deeznetz.socket</b> and <b>systemctl start deeznetz.socket</b> to complete our client service.<br/>
+1.6: Now we'll choose what to monitor on our client by creating an XML file named &lt;hostname&gt;.xml in /usr/share/deez by running the <b>deezcrawl.py</b> script copied there.<br/>
+1.7: Edit the &lt;hostname&gt;.xml using your favorite editor and remove anything you don't want monitored. You'll find it's in one long string and more than a little difficult to read, you can use <b>xmllint &lt;hostname&gt;.xml --format</b> command to make it human readable and easier to edit. Removing all the line endings improves performance.<br/>
 </div>
 <p/>
 
 <div class="section-title">
-Step 3: Configure The Network Sweep
+Step 2: Build The Monitor Server
+</div>
+<div class="section-text">
+2.1: A web server, Apache is most excellent.<br/>
+2.2: mkdir &quot;/usr/share/deez&quot;.<br/> 
+2.3: chown apache:apache &quot;/usr/share/deez&quot;.<br/>
+2.4: chmod 0644 &quot;/usr/share/deez&quot;.<br/>
+2.5: Copy the deezNetz.py script your server's /usr/share/deez.<br/>
+2.6: Write a file of hostnames to be actively monitored one name per line with '#'s as comments to your server's /usr/share/deez directory.<br/>
+2.6 Create the systemd timer unit that will drive the deezNetz.py script to scan the servers in hostnames fetching the minimal OK - RED/GREEN output and assemble an xml file in memory of their name/status then apply deezNetz.xslt XSL style transformation to produce a deezNetz.js JavaScript/React application in /var/www/html to load in your browser.<br/>
+</div>
+<p/>
+
+<div class="section-title">
+Step 3: Configuring The Network Sweep
 </div>
 <div class="section-text">
 3.1: Decide how often you want to sweep your network for status.<br/>
