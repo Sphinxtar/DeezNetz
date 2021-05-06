@@ -8,14 +8,13 @@ import socket
 
 def sweepDeez():
 	port = 8142
-	sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-	socket.getaddrinfo('www.microsoft.com', None, socket.AF_INET6)
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.settimeout(8)
 	doc = open('/usr/share/deez/deezhosts', 'r')
 	for line in doc:    
 		host = line.strip('\n')
 		print(host)
-		addr = socket.getaddrinfo(host, None, socket.AF_INET6)
+		addr = socket.getaddrinfo(host, None, socket.AF_INET)
 		print(addr[1][4][0])
 		result = sock.connect_ex((addr[1][4][0], port))
 		if result == 0:
