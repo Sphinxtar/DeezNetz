@@ -1,0 +1,13 @@
+This Is The Deez Netz Network Monitor System
+by Linus Sphinx
+--- CLIENT SCRIPTS
+checkDeez.py - answers port 8142, scans deezcrawl.py created configuration file and gives status in XML
+deezyall.py  - creates the client service on 8142 for checkDeez.py to answer with status
+deezcrawl.py - probes all ports/urls on client and writes XML configuration for checkDeez.py to scan
+--- SERVER SCRIPTS
+deeztimer.py - creates system timer/service to fire off sweepDeez.py every 6 minutes give or take a minute
+sweepDeez.py - server that scans deezhosts file entries on port 8142 and builds ReactJS status page
+--- DOCS
+deeznetz.html - This is the fine manual in HTML
+README.md - The fine manual summarized in text 
+LICENSE - Apache 2.0 license
