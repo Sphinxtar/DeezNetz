@@ -2,15 +2,15 @@
 # DeezNetz Client Installation Installer
 
 # create deeznet service for firewalld to allow
- def firewalldService():
-     firedeez = open('/etc/firewalld/services/deeznetz.xml', 'w+')
-     firedeez.write('<?xml version="1.0" encoding="utf-8"?>')
-     firedeez.write('<service>')
-     firedeez.write('<short>DeezNetz Network Monitor</short>')
-     firedeez.write('<description>Port used by Deez to fetch the status of this host. You may want to restrict this to just your monitor or internal network only</description>')
-     firedeez.write('<port protocol="tcp" port="8142"/>')
-     firedeez.write('</service>')
-     print('New /etc/firewalld/services/deeznetz.xml file written.')
+def firewalldService():
+	firedeez = open('/etc/firewalld/services/deeznetz.xml', 'w+')
+	firedeez.write('<?xml version="1.0" encoding="utf-8"?>')
+	firedeez.write('<service>')
+	firedeez.write('<short>DeezNetz Network Monitor</short>')
+	firedeez.write('<description>Port used by Deez to fetch the status of this host. You may want to restrict this to just your monitor or internal network only</description>')
+	firedeez.write('<port protocol="tcp" port="8142"/>')
+	firedeez.write('</service>')
+	print('New /etc/firewalld/services/deeznetz.xml file written.')
  
 
 def addServiceLine():
@@ -64,4 +64,5 @@ def createSocketFile():
 addServiceLine()
 createServiceFile()
 createSocketFile()
+firewalldService()
 
