@@ -40,6 +40,11 @@ $ sudo systemctl status deeznetz.socket
 Test the client service is working and all monitored services are up.
 $ echo OK |socat - TCP4:hostname:8142
 <?xml version="1.0"?><host name="hostname"><status>GREEN</status></host>
-$ 
 
-You're all set up!
+Server not hitting it?
+$ sudo firewall-cmd --get-default-zone
+$ sudo firewall-cmd --add-service deeznetz
+$ sudo firewall-cmd --reload
+$ sudo firewall-cmd --list-services
+
+Should be working now!
