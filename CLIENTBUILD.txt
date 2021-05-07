@@ -1,0 +1,45 @@
+BUILDING A CLIENT FOR MONITORING BY DEEZNETZ
+Unpack the scripts somewhere, substitute your hostname for, `hostname`.
+$ unzip deeznetz.zip 
+
+Create the client's work directory
+$ sudo mkdir /usr/share/deez
+
+Copy the script that answers the service there
+$ sudo cp checkDeez.py /usr/share/deez/
+
+Create the list of services on `hostname` to check 
+$ sudo ./deezcrawl.py 
+
+See if `hostname`.xml file created by deezcrawl.py exists.
+$ ls /usr/share/deez
+`hostname`.xml  checkDeez.py 
+
+Check to see if you need to edit it and it's well formed. Should have an entry for every port or URL to be monitored something like...
+$ xmllint --format butthead.xml 
+<?xml version="1.0"?>
+<host>
+  <service>
+    <protocol>hostmon</protocol>
+    <port status="UP">5355</port>
+    <type>tcp</type>
+    <check>2021-05-06T12:30:24</check>
+  </service>
+</host>
+
+Create the client service.
+$ sudo ./deezyall.py
+$ ls /ib/systemd/system/deeznetz*
+/lib/systemd/system/deeznetz@.service  /lib/systemd/system/deeznetz.socket
+
+Enable, start and check the client service created is listening.
+$ sudo systemctl enable deeznetz.socket
+$ sudo systemctl start deeznetz.socket
+$ sudo systemctl status deeznetz.socket
+
+Test the client service is working and all monitored services are up.
+$ echo OK |socat - TCP4:hostname:8142
+<?xml version="1.0"?><host name="hostname"><status>GREEN</status></host>
+$ 
+
+You're all set up!

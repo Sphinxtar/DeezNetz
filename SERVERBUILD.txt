@@ -1,0 +1,25 @@
+BUILDING A DEEZNETZ MONITOR SERVER
+Unpack the scripts somewhere, substitute your hostname for, `hostname`.
+$ unzip deeznetz.zip 
+
+Create the client's work directory.
+$ sudo mkdir /usr/share/deez
+
+Copy the script that is run by the timer and sweeps the network there.
+$ sudo cp sweepDeez.py /usr/share/deez/
+
+Create a deezhosts file of hostnames to monitor, one per line.
+$ sudo vi /usr/share/deez/deezhosts
+
+Create the systemd timer unit to run sweepDeez.py every 5 minutes or so.
+$ sudo ./deeztimer.py
+
+Enable the timer/service and check their status
+systemctl enable sweepDeez.service
+systemctl start sweepDeez.service
+systemctl status sweepDeez.service
+systemctl enable sweepDeez.timer
+systemctl start sweepDeez.timer
+systemctl status sweepDeez.timer
+
+Watch /var/www/html and deeznetz.js should appear after the client sweep.
