@@ -38,7 +38,9 @@ $ sudo systemctl start deeznetz.socket
 $ sudo systemctl status deeznetz.socket
 
 Test the client service is working and all monitored services are up.
-$ echo OK |socat - TCP4:hostname:8142
+$ wget http://hostname:8142/OK
+and look in file named OK in your current directory
+or use a browser to the same url. Should get web page with a body of:
 <?xml version="1.0"?><host name="hostname"><status>GREEN</status></host>
 
 Server not hitting it?
