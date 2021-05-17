@@ -3,13 +3,20 @@ import socket
 import sys
 import subprocess
 import xml.etree.ElementTree as ET
-import datetime
+import time
 import requests
 
 # The DeezNetz Network Monitor Systemd Service Script
 # cmd is how much output to return - OK returns red/green - ERR returns only the fails in english - FULL for whole XML doc
 
-cmd = sys.stdin.readline().strip().upper()
+url = sys.stdin.readline()
+while(True):
+    header = sys.stdin.readline()
+    if header == "\r\n":
+        break
+
+cmd = url.split()[1][1:]
+
 if cmd == "OK":
     report = 0
 elif cmd == "ERR":
@@ -17,7 +24,7 @@ elif cmd == "ERR":
 else:
     report = 2
 condition = 0 # 0 = GREEN 1 = RED error condition returned on OK cmd 
-stamp = datetime.datetime.now().replace(microsecond=0).isoformat()
+stamp = time.asctime(time.gmtime())+" GMT"
 docs = "/usr/share/deez/"
 hostname = socket.gethostname()
 address = socket.gethostbyname(hostname)
@@ -78,8 +85,9 @@ def checklink(link):
 
 
 def checkDeez():
+    output=[]
     firstserve = 0
-    sys.stdout.write("<?xml version=\"1.0\"?><host name=\""+ hostname + "\">")
+    output.append("<?xml version=\"1.0\"?><host name=\""+ hostname + "\">")
     tree = ET.parse(file)
     for elem in tree.iter():
         if elem.tag == "host":
@@ -88,53 +96,63 @@ def checkDeez():
         if elem.tag == "service":
             if firstserve == 0: 
                 if report > 1:
-                    sys.stdout.write("<service>")
+                    output.append("<service>")
                 firstserve=1
             else:
                 if report > 1:
-                    sys.stdout.write("</service><service>")
+                    output.append("</service><service>")
             continue
 
         if elem.tag == "url":
             status = checklink(elem.text)
             if report > 0:
                 if (status != "200" and report > 0) or report == 2:
-                    sys.stdout.write("<url err=\""+status+"\">"+str(elem.text)+"</url>")
+                    output.append("<url err=\""+status+"\">"+str(elem.text)+"</url>")
             continue
 
         if elem.tag == "port":
             uprdown = checkport(int(elem.text))
             if (uprdown != "UP" and report > 0) or report == 2:
-                sys.stdout.write("<port status=\""+uprdown+"\">"+str(elem.text)+"</port>")
+                output.append("<port status=\""+uprdown+"\">"+str(elem.text)+"</port>")
             continue
 
         if elem.tag == "check":
             if report > 1:
-                sys.stdout.write("<"+str(elem.tag)+">"+stamp+"</"+str(elem.tag)+">")
+                output.append("<"+str(elem.tag)+">"+stamp+"</"+str(elem.tag)+">")
             continue
 
         if elem.text != "None":
             if report > 1:
-                sys.stdout.write("<"+str(elem.tag)+">"+str(elem.text)+"</"+str(elem.tag)+">")
+                output.append("<"+str(elem.tag)+">"+str(elem.text)+"</"+str(elem.tag)+">")
             continue
         else:
             if report > 1:
-                sys.stdout.write("<"+str(elem.tag)+">")
+                output.append("<"+str(elem.tag)+">")
 
     if report > 1:
-        sys.stdout.write("</service>")
-    sys.stdout.write(diskusage())
+        output.append("</service>")
+    output.append(diskusage())
     if report == 0:
-        sys.stdout.write("<status>")
+        output.append("<status>")
         if condition != 0:
-            sys.stdout.write("RED")
+            output.append("RED")
         else:
-            sys.stdout.write("GREEN")
-        sys.stdout.write("</status>")
+            output.append("GREEN")
+        output.append("</status>")
     if condition == 0 and report == 1:
-        sys.stdout.write("<status>No Errors Found</status>")
-    sys.stdout.write("</host>\r\n")
+        output.append("<status>No Errors Found</status>")
+    output.append("</host>\r\n")
     del tree
+    return(output)
 
-checkDeez()
+
+sys.stdout.write("HTTP/1.1 200 OK\r\n");
+sys.stdout.write("Connection: keep-alive\r\n" );
+sys.stdout.write("Content-Type: text/html; charset=utf-8\r\n" );
+msg = ''.join(checkDeez())
+sys.stdout.write("Content-Length: "+str(len(msg))+"\r\n");
+sys.stdout.write("Date: "+time.asctime(time.gmtime())+" GMT\r\n");
+sys.stdout.write("\r\n")
+sys.stdout.write(msg);
+sys.stdout.write("\r\n")
 sys.exit(0)
