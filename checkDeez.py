@@ -149,6 +149,7 @@ def checkDeez():
 sys.stdout.write("HTTP/1.1 200 OK\r\n");
 sys.stdout.write("Connection: keep-alive\r\n" );
 sys.stdout.write("Content-Type: text/html; charset=utf-8\r\n" );
+sys.stdout.write("Access-Control-Allow-Origin: *\r\n");
 msg = ''.join(checkDeez())
 sys.stdout.write("Content-Length: "+str(len(msg))+"\r\n");
 sys.stdout.write("Date: "+time.asctime(time.gmtime())+" GMT\r\n");
