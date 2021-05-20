@@ -15,9 +15,9 @@ def sweepDeez():
     red = 0
     yellow = 0
     green = 0
-    reddoc = ["<?xml version=\"1.0\"?><hosts><bg>red</bg>"]
-    yellowdoc = ["<?xml version=\"1.0\"?><hosts><bg>yellow</bg>"]
-    greendoc = ["<?xml version=\"1.0\"?><hosts><bg>green</bg>"]
+    reddoc = ["<?xml version=\"1.0\"?><hosts><bg>red</bg><msg>ERR</msg>"]
+    yellowdoc = ["<?xml version=\"1.0\"?><hosts><bg>yellow</bg><msg>OK</msg>"]
+    greendoc = ["<?xml version=\"1.0\"?><hosts><bg>green</bg><msg>FULL</msg>"]
 #   rewrite to a host node
     hoststyle = open('host.xsl')
     hostroot = hoststyle.read()
@@ -59,9 +59,9 @@ def sweepDeez():
             reddoc.append(str(hosttransform(statxml)))
             red += 1
     doc.close()
-    reddoc.append("</hosts>")
-    yellowdoc.append("</hosts>")
-    greendoc.append("</hosts>")
+    reddoc.append("<red>"+str(red)+"</red>"+"<yellow>"+str(yellow)+"</yellow>"+"<green>"+str(green)+"</green>"+"</hosts>")
+    yellowdoc.append("<red>"+str(red)+"</red>"+"<yellow>"+str(yellow)+"</yellow>"+"<green>"+str(green)+"</green>"+"</hosts>")
+    greendoc.append("<red>"+str(red)+"</red>"+"<yellow>"+str(yellow)+"</yellow>"+"<green>"+str(green)+"</green>"+"</hosts>")
     return([red,"".join(reddoc),yellow,"".join(yellowdoc),green,"".join(greendoc)])
 
 docs = sweepDeez()
@@ -92,4 +92,4 @@ print(docs[1])
 #print(docs[3])
 #print("green: "+str(docs[4]))
 #print(docs[5])
-
+quit()
