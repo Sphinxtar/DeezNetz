@@ -19,7 +19,7 @@ def sweepDeez():
     yellowdoc = ["<?xml version=\"1.0\"?><hosts><bg>yellow</bg>"]
     greendoc = ["<?xml version=\"1.0\"?><hosts><bg>green</bg>"]
 #   rewrite to a host node
-    hoststyle = open('hostdoc.xsl')
+    hoststyle = open('host.xsl')
     hostroot = hoststyle.read()
     hoststyle.close()
     hostxslt = ET.XML(hostroot)
