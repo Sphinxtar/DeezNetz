@@ -14,15 +14,25 @@ alert(bs);
 </script>
 <style>
 .button {
-  border:2px solid #000000;
   color:#000000;
   font-family:Arial;
-  font-size:18px;
+}
+.counts {
+  border:2px solid #000000;
+  font-size:16px;
   font-weight:bold;
-  height:32px;
-  width:196px;
-  max-width:256px;
-  margin:18px;
+  height:28px;
+  width:192px;
+  margin:14px;
+}
+.host {
+  background-color:#ffffff;
+  border:1px solid #000000;
+  font-size:16px;
+  font-weight:normal;
+  height:24px;
+  width:256px;
+  margin:4px;
 }
 .green {
   background-color:#44c767;
@@ -33,18 +43,12 @@ alert(bs);
 .yellow {
   background-color:#ffec23;
 }
-.host {
-  background-color:#ffffff;
+.hosts {
+  margin:24px;
 }
 body {
   background: linear-gradient(to right,]]><xsl:value-of select="bg"/><![CDATA[,black);
   text-align:center;
-}
-.center {
-  margin: 0;
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 .topleft {
   color:#FFFFFF;
@@ -57,15 +61,11 @@ body {
 </head>
 <body>
 <a href="index.html"><h4 class="topleft">DeezNetz by Linus Sphinx</h4></a>
-<span><button type="button" class="button red" onclick="window.location.href='red.html'">Red: ]]><xsl:value-of select="red"/><![CDATA[</button>
-<button type="button" class="button yellow" onclick="window.location.href='yellow.html'">Yellow: ]]><xsl:value-of select="yellow"/><![CDATA[</button>
-<button type="button" class="button green" onclick="window.location.href='green.html'">Green: ]]><xsl:value-of select="green"/><![CDATA[</button></span>
-<hr/>
-<div>]]><xsl:for-each select="host">
-<![CDATA[<div><button type="button" class="button host" onclick="getErr(']]><xsl:value-of select="@name"/><![CDATA[')">]]><xsl:value-of select="@name"/><![CDATA[</button></div>]]>
-</xsl:for-each><![CDATA[</div>
+<button type="button" class="button counts red" onclick="window.location.href='red.html'">Red: ]]><xsl:value-of select="red"/><![CDATA[</button>
+<button type="button" class="button counts yellow" onclick="window.location.href='yellow.html'">Yellow: ]]><xsl:value-of select="yellow"/><![CDATA[</button>
+<button type="button" class="button counts green" onclick="window.location.href='green.html'">Green: ]]><xsl:value-of select="green"/><![CDATA[</button>
+<div class="hosts">]]><xsl:for-each select="host"><![CDATA[<span><button type="button" class="host" onclick="getErr(']]><xsl:value-of select="@name"/><![CDATA[')">]]><xsl:value-of select="@name"/><![CDATA[</button></span>]]></xsl:for-each><![CDATA[</div>
 </body>
 </html>]]>
 </xsl:template>
 </xsl:stylesheet>
-

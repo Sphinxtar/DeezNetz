@@ -15,8 +15,8 @@ def sweepDeez():
     red = 0
     yellow = 0
     green = 0
-    reddoc = ["<?xml version=\"1.0\"?><hosts><bg>red</bg><msg>ERR</msg>"]
-    yellowdoc = ["<?xml version=\"1.0\"?><hosts><bg>yellow</bg><msg>OK</msg>"]
+    reddoc = ["<?xml version=\"1.0\"?><hosts><bg>red</bg><msg>OK</msg>"]
+    yellowdoc = ["<?xml version=\"1.0\"?><hosts><bg>yellow</bg><msg>ERR</msg>"]
     greendoc = ["<?xml version=\"1.0\"?><hosts><bg>green</bg><msg>FULL</msg>"]
 #   rewrite to a host node
     hoststyle = open('host.xsl')
@@ -38,15 +38,14 @@ def sweepDeez():
         try:
             response = requests.get(url,timeout=4)
             if (response.status_code != 200):
-                # http error on deez
+                # error from deez
                 status = "<?xml version=\"1.0\"?><host name=\""+host+"\"><status>YELLOW</status></host>"
             else:
                 # success 200
                 status = response.text.strip()
         except Exception as ex:
-            # something else really bad or deez is not listening
+            # host down or deez out 
             status = "<?xml version=\"1.0\"?><host name=\""+host+"\"><status>RED</status></host>"
-
         statxml = ET.XML(status)
         color = str(statustransform(statxml))
         if color == "GREEN":
@@ -81,15 +80,28 @@ rygstyle.close()
 rygxslt = ET.XML(rygroot)
 rygtransform = ET.XSLT(rygxslt)
 ryghtml = rygtransform(rygxml)
-
 rygfile = open('index.html', 'w+')
 rygfile.write(str(ryghtml))
 rygfile.close()
 
-#print("red: "+str(docs[0]))
-print(docs[1])
-#print("yellow: "+str(docs[2]))
-print(docs[3])
-#print("green: "+str(docs[4]))
-print(docs[5])
+hostyle = open('hosts.xsl')
+hostsroot = hostyle.read()
+hostyle.close()
+hostsxslt = ET.XML(hostsroot)
+hoststransform = ET.XSLT(hostsxslt)
+
+redhtml = hoststransform(ET.XML(docs[1]))
+redfile = open('red.html', 'w+')
+redfile.write(str(redhtml))
+redfile.close()
+
+yellowhtml = hoststransform(ET.XML(docs[3]))
+yellowfile = open('yellow.html', 'w+')
+yellowfile.write(str(yellowhtml))
+yellowfile.close()
+
+greenhtml = hoststransform(ET.XML(docs[5]))
+greenfile = open('green.html', 'w+')
+greenfile.write(str(greenhtml))
+greenfile.close()
 quit()
