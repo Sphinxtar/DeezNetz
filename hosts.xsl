@@ -34,7 +34,7 @@ alert(bs);
   background-color:#ffec23;
 }
 .host {
-  background-color:#ffec23;
+  background-color:#ffffff;
 }
 body {
   background: linear-gradient(to right,]]><xsl:value-of select="bg"/><![CDATA[,black);
@@ -57,12 +57,13 @@ body {
 </head>
 <body>
 <a href="index.html"><h4 class="topleft">DeezNetz by Linus Sphinx</h4></a>
-<div><button type="button" class="button red" onclick="window.location.href='red.html'">Red: ]]><xsl:value-of select="red"/><![CDATA[</button></div>
-<div><button type="button" class="button yellow" onclick="window.location.href='yellow.html'">Yellow: ]]><xsl:value-of select="yellow"/><![CDATA[</button></div>
-<div><button type="button" class="button green" onclick="window.location.href='green.html'">Green: ]]><xsl:value-of select="green"/><![CDATA[</button></div>
+<span><button type="button" class="button red" onclick="window.location.href='red.html'">Red: ]]><xsl:value-of select="red"/><![CDATA[</button>
+<button type="button" class="button yellow" onclick="window.location.href='yellow.html'">Yellow: ]]><xsl:value-of select="yellow"/><![CDATA[</button>
+<button type="button" class="button green" onclick="window.location.href='green.html'">Green: ]]><xsl:value-of select="green"/><![CDATA[</button></span>
 <hr/>
-<div>
-</div>
+<div>]]><xsl:for-each select="host">
+<![CDATA[<div><button type="button" class="button host" onclick="getErr(']]><xsl:value-of select="@name"/><![CDATA[')">]]><xsl:value-of select="@name"/><![CDATA[</button></div>]]>
+</xsl:for-each><![CDATA[</div>
 </body>
 </html>]]>
 </xsl:template>
