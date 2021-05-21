@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 web  = ['http','https']
 name = socket.gethostname()
 hrefs = []
-stamp = datetime.datetime.now().replace(microsecond=0).isoformat()
 
 def checkservice(ip, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -60,7 +59,6 @@ def buildXMLconfig(host):
                     probe(words[0] + "://" + host, doc)
                 doc.write("<port status=\"UP\">" + port[0] + "</port>")
                 doc.write("<type>" + port[1] + "</type>")
-                doc.write("<check>"+stamp+"</check>")
                 doc.write("</service>")
     svcs.close()
     doc.write("</host>\n")

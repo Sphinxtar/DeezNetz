@@ -5,6 +5,8 @@ import subprocess
 import xml.etree.ElementTree as ET
 import time
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # The DeezNetz Network Monitor Systemd Service Script
 # cmd is how much output to return - OK returns red/green - ERR returns only the fails in english - FULL for whole XML doc
@@ -21,8 +23,12 @@ if cmd == "OK":
     report = 0
 elif cmd == "ERR":
     report = 1
-else:
+elif cmd == "FULL":
     report = 2
+else:
+    sys.stdout.write("HTTP/1.1 404 NOT FOUND\r\n");
+    quit()
+
 condition = 0 # 0 = GREEN 1 = RED error condition returned on OK cmd 
 stamp = time.asctime(time.gmtime())+" GMT"
 docs = "/usr/share/deez/"
@@ -87,7 +93,7 @@ def checklink(link):
 def checkDeez():
     output=[]
     firstserve = 0
-    output.append("<?xml version=\"1.0\"?><host name=\""+ hostname + "\">")
+    output.append("<?xml version=\"1.0\"?><host name=\""+hostname+"\""+" stamp=\""+stamp+"\">")
     tree = ET.parse(file)
     for elem in tree.iter():
         if elem.tag == "host":
@@ -108,17 +114,11 @@ def checkDeez():
             if report > 0:
                 if (status != "200" and report > 0) or report == 2:
                     output.append("<url err=\""+status+"\">"+str(elem.text)+"</url>")
-            continue
 
         if elem.tag == "port":
             uprdown = checkport(int(elem.text))
             if (uprdown != "UP" and report > 0) or report == 2:
                 output.append("<port status=\""+uprdown+"\">"+str(elem.text)+"</port>")
-            continue
-
-        if elem.tag == "check":
-            if report > 1:
-                output.append("<"+str(elem.tag)+">"+stamp+"</"+str(elem.tag)+">")
             continue
 
         if elem.text != "None":
