@@ -6,10 +6,12 @@ import xml.etree.ElementTree as ET
 import time
 import requests
 import urllib3
+# comment out the next line to enable insecure SSL Certificate warnings
+# make sure your certificates are all up to date first
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # The DeezNetz Network Monitor Systemd Service Script
-# cmd is how much output to return - OK returns red/green - ERR returns only the fails in english - FULL for whole XML doc
+# cmd is how much output to return - OK = red/green - ERR = fails - FULL for everything
 
 url = sys.stdin.readline()
 while(True):
@@ -114,6 +116,7 @@ def checkDeez():
             if report > 0:
                 if (status != "200" and report > 0) or report == 2:
                     output.append("<url err=\""+status+"\">"+str(elem.text)+"</url>")
+            continue
 
         if elem.tag == "port":
             uprdown = checkport(int(elem.text))
