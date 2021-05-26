@@ -4,14 +4,12 @@ import sys
 import subprocess
 import xml.etree.ElementTree as ET
 import time
-import requests
+import certifi
 import urllib3
-# comment out the next line to enable insecure SSL Certificate warnings
-# make sure your certificates are all up to date first
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # The DeezNetz Network Monitor Systemd Service Script
 # cmd is how much output to return - OK = red/green - ERR = fails - FULL for everything
+
 
 url = sys.stdin.readline()
 while(True):
@@ -37,7 +35,10 @@ docs = "/usr/share/deez/"
 hostname = socket.gethostname()
 address = socket.gethostbyname(hostname)
 file = docs+hostname+'.xml'
-validateSSL = False # True will validate bad/self signed certificates
+https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
+http = urllib3.PoolManager()
+head = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+
 
 def diskusage():
     global condition
@@ -77,14 +78,16 @@ def checkport(port):
 
 # web service see if we get a 200
 def checklink(link):
-    global validateSSL
     global condition
     retval = "unknown"
     try:
-        apage = requests.get(link,timeout=4.0,verify=validateSSL)
-        if apage.status_code != 200:
+	if link[0:4].lower() == "https":
+        	response = https.request('GET',link,fields=None, headers=head)
+	else:
+		response = http.request('GET',link)	
+        if response.status != 200:
             condition = 1
-        retval = str(apage.status_code)
+        retval = str(response.status)
     except requests.exceptions.ConnectionError:
         retval = "unreachable"
     except requests.exceptions.SSLError:
@@ -159,4 +162,6 @@ sys.stdout.write("Date: "+time.asctime(time.gmtime())+" GMT\r\n");
 sys.stdout.write("\r\n")
 sys.stdout.write(msg);
 sys.stdout.write("\r\n")
+https.clear()
+http.clear()
 sys.exit(0)

@@ -32,11 +32,11 @@ def checkservice(ip, port):
 def probe(site, xdoc):
 	try:
 		if site[0:4].lower() == "https":
-			apage = https.request('GET', site, fields=None, headers=head)
+			response = https.request('GET', site, fields=None, headers=head)
 		else:
-			apage = http.request('GET', site, fields=None, headers=head)
-		xdoc.write("<url err=\""+str(apage.status)+"\">"+site+"</url>")
-		soup = BeautifulSoup(apage.data, features="lxml")
+			response = http.request('GET', site, fields=None, headers=head)
+		xdoc.write("<url err=\""+str(response.status)+"\">"+site+"</url>")
+		soup = BeautifulSoup(response.data, features="lxml")
 		links = soup.find_all("a")
 		for link in links:
 			if link.get("href") not in hrefs and link.get("href") != site:

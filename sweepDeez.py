@@ -4,11 +4,14 @@
 # checks http://hostname:8142/OK and gets system status from client
 # builds XML tree of statuses in memory 
 # applies deezNetz.xsl and writes /var/www/html/deezNetz.js
-import requests
+import certifi
+import urllib3
 from lxml import etree as ET
+
 protocol = "http://"
 port = 8142
 path = "/OK"
+http = urllib3.PoolManager()
 
 
 def sweepDeez():
@@ -36,13 +39,13 @@ def sweepDeez():
         host = line.strip('\n')
         url = protocol+host+":"+str(port)+path
         try:
-            response = requests.get(url,timeout=4)
-            if (response.status_code != 200):
+            response = http.request('GET', url)
+            if (response.status != 200):
                 # error from deez
                 status = "<?xml version=\"1.0\"?><host name=\""+host+"\"><status>YELLOW</status></host>"
             else:
                 # success 200
-                status = response.text.strip()
+                status = response.data.strip()
         except Exception as ex:
             # host down or deez out 
             status = "<?xml version=\"1.0\"?><host name=\""+host+"\"><status>RED</status></host>"
@@ -104,4 +107,5 @@ greenhtml = hoststransform(ET.XML(docs[5]))
 greenfile = open('green.html', 'w+')
 greenfile.write(str(greenhtml))
 greenfile.close()
+http.clear()
 quit()
