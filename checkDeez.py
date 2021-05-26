@@ -81,12 +81,12 @@ def checklink(link):
     global condition
     retval = "unknown"
     try:
-	if link[0:4].lower() == "https":
-        	response = https.request('GET',link,fields=None, headers=head)
-	else:
-		response = http.request('GET',link)	
-        if response.status != 200:
-            condition = 1
+        if link[0:4].lower() == "https":
+            response = https.request('GET',link,fields=None, headers=head)
+        else:
+            response = http.request('GET',link)	
+            if response.status != 200:
+                condition = 1
         retval = str(response.status)
     except requests.exceptions.ConnectionError:
         retval = "unreachable"
