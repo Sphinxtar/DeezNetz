@@ -35,7 +35,6 @@ def probe(site, xdoc):
 			apage = https.request('GET', site, fields=None, headers=head)
 		else:
 			apage = http.request('GET', site, fields=None, headers=head)
-			apage = http.request('GET', site)
 		xdoc.write("<url err=\""+str(apage.status)+"\">"+site+"</url>")
 		soup = BeautifulSoup(apage.data, features="lxml")
 		links = soup.find_all("a")
