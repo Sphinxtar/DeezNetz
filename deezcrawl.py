@@ -1,11 +1,18 @@
 #!/usr/bin/python3
 # crawl the sockets on a box and create an XML file for DeezNetz
 # dive into any http/https ports and add nodes for all the URL's found
+import sys
 import datetime
-import requests
+import certifi
+import urllib3
 import socket
 from bs4 import BeautifulSoup
 
+head = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+
+# can change next line to CERT_NONE to skip them
+https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
+http = urllib3.PoolManager()
 web  = ['http','https']
 name = socket.gethostname()
 hrefs = []
@@ -20,27 +27,31 @@ def checkservice(ip, port):
         return(False)
     sock.close()
 
+
 # web service so recursively probe and add any links
 def probe(site, xdoc):
-    # change verify=True to validate certificates
-    try:
-        apage = requests.get(site, verify=False)
-        xdoc.write("<url err=\""+str(apage.status_code)+"\">"+site+"</url>")
-        soup = BeautifulSoup(apage.content, features="lxml")
-        links = soup.find_all("a")
-        for link in links:
-            if link.get("href") not in hrefs and link.get("href") != site:
-               hrefs.append(link.get("href"))
-               probe(link.get("href"),0)
-    except requests.exceptions.ConnectionError:
-        xdoc.write("<url err=\"unreachable\">"+site+"</url>")
-        return
-    except urllib3.exceptions.InsecureRequestWarning:
-        xdoc.write("<url err=\"TLSV13_ALERT_CERTIFICATE_REQUIRED)\">"+site+"</url>")
-        return
-    except:
-        xdoc.write("<url err=\"INVALID REQUEST\">"+site+"</url>")
-        return
+	try:
+		if site[0:4].lower() == "https":
+			apage = https.request('GET', site, fields=None, headers=head)
+		else:
+			apage = http.request('GET', site, fields=None, headers=head)
+			apage = http.request('GET', site)
+		xdoc.write("<url err=\""+str(apage.status)+"\">"+site+"</url>")
+		soup = BeautifulSoup(apage.data, features="lxml")
+		links = soup.find_all("a")
+		for link in links:
+			if link.get("href") not in hrefs and link.get("href") != site:
+				hrefs.append(link.get("href"))
+			probe(link.get("href"),0)
+	except urllib3.exceptions.ConnectionError:
+		xdoc.write("<url err=\"unreachable\">"+site+"</url>")
+		return
+	except urllib3.exceptions.InsecureRequestWarning:
+		xdoc.write("<url err=\"TLSV13_ALERT_CERTIFICATE_REQUIRED)\">"+site+"</url>")
+	except:
+		return
+	return
+
 
 def buildXMLconfig(host):
     addr = socket.gethostbyname(host)
@@ -56,7 +67,7 @@ def buildXMLconfig(host):
                 doc.write("<service>")
                 doc.write("<protocol>" + words[0] + "</protocol>")
                 if words[0] in web:
-                    probe(words[0] + "://" + host, doc)
+                    probe(words[0] + "://" + host + "/", doc)
                 doc.write("<port status=\"UP\">" + port[0] + "</port>")
                 doc.write("<type>" + port[1] + "</type>")
                 doc.write("</service>")
@@ -64,4 +75,7 @@ def buildXMLconfig(host):
     doc.write("</host>\n")
     doc.close()
 
+
 buildXMLconfig(name)
+http.clear()
+https.clear()
