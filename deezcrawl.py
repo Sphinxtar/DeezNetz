@@ -11,8 +11,8 @@ from bs4 import BeautifulSoup
 head = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
 
 # can change next line to CERT_NONE to skip them
-https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-http = urllib3.PoolManager()
+https = urllib3.PoolManager(timeout=3.0, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
+http = urllib3.PoolManager(timeout=3.0)
 web  = ['http','https']
 name = socket.gethostname()
 hrefs = []

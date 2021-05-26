@@ -11,7 +11,7 @@ from lxml import etree as ET
 protocol = "http://"
 port = 8142
 path = "/OK"
-http = urllib3.PoolManager()
+http = urllib3.PoolManager(timeout=3.0)
 
 
 def sweepDeez():
