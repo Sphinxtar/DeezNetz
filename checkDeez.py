@@ -41,6 +41,7 @@ head = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, l
 
 
 def memfree():
+	global condition
 	highwater = 15; # set this to percentage left to alert on
 	fm = (str(subprocess.check_output(["free", "-k"]), 'utf-8')).split('\n')
 	freemem = iter(fm)
@@ -51,8 +52,12 @@ def memfree():
 	free = int(mlist[6])/int(mlist[1])*100
 #	print(str(int(mlist[6]))+" / "+str(int(mlist[1]))+"*100="+str(free)+"%")
 	if (round(free)<highwater):
-		print("<freemem>"+str(round(free,2))+"%</freemem>")
 		condition = 1
+	if report == 0 or condition != 1:
+		retval = ""
+	else:
+		retval = "<freemem>"+str(round(free,2))+"%</freemem>"
+	return(retval)
 
 
 def diskusage():
