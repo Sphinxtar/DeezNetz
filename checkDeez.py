@@ -53,10 +53,10 @@ def memfree():
 #	print(str(int(mlist[6]))+" / "+str(int(mlist[1]))+"*100="+str(free)+"%")
 	if (round(free)<highwater):
 		condition = 1
-	if report == 0 or condition != 1:
-		retval = ""
-	else:
+	if report == 2 or (report == 1 and condition == 1):
 		retval = "<freemem>"+str(round(free,2))+"%</freemem>"
+	else:
+		retval = ""
 	return(retval)
 
 
@@ -64,22 +64,24 @@ def diskusage():
 	global condition
 	highwater = 85 # set this to percentage full to alert on
 	diskfull = 0
-	retval = "<disk>"
+	retval=[]
+	retval.append("<disk>")
 	df = (str(subprocess.check_output(["df", "-h"]), 'utf-8')).split('\n')
 	dfree = iter(df)
 	next(dfree)
 	for row in dfree:
 		cols = row.split( )
-	if len(cols) > 3:
-		if int(cols[4].strip('%')) > highwater:
-			retval = retval + "<full>"+cols[0]+" at "+cols[4]+"</full>"
-			diskfull = 1
-	retval = retval + "</disk>"
+		if len(cols) > 3:
+			retval.append("<full>"+cols[0]+" at "+cols[4]+"</full>")
+			if int(cols[4].strip('%')) > highwater:
+				diskfull = 1
+	retval.append("</disk>")
 	if diskfull > 0:
 		condition = 1
-	if report == 0 or condition != 1:
-		retval = ""
-	return(retval)
+	if report == 0 or (report == 1 and condition != 1):
+		return("")
+	else:
+		return(''.join(retval))
 
 
 def checkport(port):
