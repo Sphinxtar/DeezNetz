@@ -8,6 +8,8 @@ import certifi
 import urllib3
 from lxml import etree as ET
 
+web = "/var/www/html/deez/"
+home = "/usr/share/deez/"
 protocol = "http://"
 port = 8142
 path = "/OK"
@@ -18,23 +20,23 @@ def sweepDeez():
 	red = 0
 	yellow = 0
 	green = 0
-	reddoc = ["<?xml version=\"1.0\"?><hosts><bg>red</bg><msg>OK</msg>"]
+	reddoc = ["<?xml version=\"1.0\"?><hosts><bg>red</bg><msg>ERR</msg>"]
 	yellowdoc = ["<?xml version=\"1.0\"?><hosts><bg>yellow</bg><msg>ERR</msg>"]
 	greendoc = ["<?xml version=\"1.0\"?><hosts><bg>green</bg><msg>FULL</msg>"]
 #   rewrite to a host node
-	hoststyle = open('host.xsl')
+	hoststyle = open(home+'host.xsl')
 	hostroot = hoststyle.read()
 	hoststyle.close()
 	hostxslt = ET.XML(hostroot)
 	hosttransform = ET.XSLT(hostxslt)
 #   just the status color
-	statusstyle = open('status.xsl')
+	statusstyle = open(home+'status.xsl')
 	statusroot = statusstyle.read()
 	statusstyle.close()
 	statusxslt = ET.XML(statusroot)
 	statustransform = ET.XSLT(statusxslt)
 
-	doc = open('/usr/share/deez/deezhosts', 'r')
+	doc = open(home+'deezhosts', 'r')
 	for line in doc:	
 		host = line.strip('\n')
 		url = protocol+host+":"+str(port)+path
@@ -73,34 +75,34 @@ else:
 rygdoc = "<?xml version=\"1.0\"?><sums><bg>"+bg+"</bg><red>"+str(docs[0])+"</red><yellow>"+str(docs[2])+"</yellow><green>"+str(docs[4])+"</green></sums>"
 rygxml = ET.XML(rygdoc)
 
-rygstyle = open('ryg.xsl')
+rygstyle = open(home+'ryg.xsl')
 rygroot = rygstyle.read()
 rygstyle.close()
 rygxslt = ET.XML(rygroot)
 rygtransform = ET.XSLT(rygxslt)
 ryghtml = rygtransform(rygxml)
-rygfile = open('index.html', 'w+')
+rygfile = open(web+"index.html", 'w+')
 rygfile.write(str(ryghtml))
 rygfile.close()
 
-hostyle = open('hosts.xsl')
+hostyle = open(home+'colors.xsl')
 hostsroot = hostyle.read()
 hostyle.close()
 hostsxslt = ET.XML(hostsroot)
 hoststransform = ET.XSLT(hostsxslt)
 
 redhtml = hoststransform(ET.XML(docs[1]))
-redfile = open('red.html', 'w+')
+redfile = open(web+'red.html', 'w+')
 redfile.write(str(redhtml))
 redfile.close()
 
 yellowhtml = hoststransform(ET.XML(docs[3]))
-yellowfile = open('yellow.html', 'w+')
+yellowfile = open(web+'yellow.html', 'w+')
 yellowfile.write(str(yellowhtml))
 yellowfile.close()
 
 greenhtml = hoststransform(ET.XML(docs[5]))
-greenfile = open('green.html', 'w+')
+greenfile = open(web+'green.html', 'w+')
 greenfile.write(str(greenhtml))
 greenfile.close()
 http.clear()

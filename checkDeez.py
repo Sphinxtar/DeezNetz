@@ -2,7 +2,7 @@
 import socket
 import sys
 import subprocess
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import time
 import certifi
 import urllib3
@@ -120,7 +120,9 @@ def checklink(link):
 
 
 def checkDeez():
-	output=[]
+	output = []
+	outline = []
+	down = 0
 	firstserve = 0
 	output.append("<?xml version=\"1.0\"?><host name=\""+hostname+"\""+" stamp=\""+stamp+"\">")
 	tree = ET.parse(file)
@@ -129,37 +131,40 @@ def checkDeez():
 			continue
 
 		if elem.tag == "service":
-			if firstserve == 0: 
-				if report > 1:
-					output.append("<service>")
-					firstserve=1
+			if firstserve == 0:
+				outline.append("<service>")
+				firstserve = 1
 			else:
-				if report > 1:
-					output.append("</service><service>")
+				outline.append("</service><service>")
+			continue
+
+		if elem.tag == "protocol":
+			outline.append("<protocol>"+str(elem.text)+"</protocol>")
 			continue
 
 		if elem.tag == "url":
 			status = checklink(elem.text)
-			if report > 0:
-				if (status != "200" and report > 0) or report == 2:
-					output.append("<url err=\""+status+"\">"+str(elem.text)+"</url>")
-			continue
+			outline.append("<url err=\""+status+"\">"+str(elem.text)+"</url>")
+			if status != "200":
+				down = 1
 
 		if elem.tag == "port":
 			uprdown = checkport(int(elem.text))
-			if (uprdown != "UP" and report > 0) or report == 2:
-				output.append("<port status=\""+uprdown+"\">"+str(elem.text)+"</port>")
+			outline.append("<port status=\""+uprdown+"\">"+str(elem.text)+"</port>")
+			if uprdown != "UP":
+				down = 1
+
+		if elem.tag == "type":
+			outline.append("<type>"+str(elem.text)+"</type>")
 			continue
 
-		if elem.text != "None":
-			if report > 1:
-				output.append("<"+str(elem.tag)+">"+str(elem.text)+"</"+str(elem.tag)+">")
-			continue
-		else:
-			if report > 1:
-				output.append("<"+str(elem.tag)+">")
-	if report > 1:
-		output.append("</service>")
+	outline.append("</service>")
+
+	if down > 0 or report > 1:
+		output.append('\n'.join(outline))
+		del outline[:]
+
+	if report > 0:
 		output.append(diskusage())
 		output.append(memfree())
 	if report == 0:
@@ -181,6 +186,13 @@ sys.stdout.write("Connection: keep-alive\r\n" );
 sys.stdout.write("Content-Type: text/html; charset=utf-8\r\n" );
 sys.stdout.write("Access-Control-Allow-Origin: *\r\n");
 msg = ''.join(checkDeez())
+if report > 0:
+	data = open(docs+'packed.xsl')
+	xslt_content = data.read()
+	xslt_root = ET.XML(xslt_content)
+	dom = ET.fromstring(msg)
+	transform = ET.XSLT(xslt_root)
+	msg = str(transform(dom))
 sys.stdout.write("Content-Length: "+str(len(msg))+"\r\n");
 sys.stdout.write("Date: "+time.asctime(time.gmtime())+" GMT\r\n");
 sys.stdout.write("\r\n")

@@ -9,7 +9,9 @@
 async function getErr(hostName) {
 const status = await fetch("http://"+hostName+":8142/]]><xsl:value-of select="msg"/><![CDATA[");
 const bs = await status.text();
-alert(bs);
+let newWin = window.open("data:text/html,", hostName, "width=800,height=640,left=150,top=200,toolbar=0,status=0");
+newWin.document.write(bs);
+newWin.focus();
 }
 </script>
 <style>

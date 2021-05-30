@@ -14,6 +14,7 @@ head = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, l
 https = urllib3.PoolManager(timeout=3.0, cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 http = urllib3.PoolManager(timeout=3.0)
 web  = ['http','https']
+home = "/usr/share/deez/"
 name = socket.gethostname()
 hrefs = []
 
@@ -54,7 +55,7 @@ def probe(site, xdoc):
 
 def buildXMLconfig(host):
     addr = socket.gethostbyname(host)
-    doc = open('/usr/share/deez/' + host + '.xml', 'w')
+    doc = open(home+host+'.xml', 'w')
     doc.write("<host>")
     svcs = open('/etc/services', 'r')
     for line in svcs:
