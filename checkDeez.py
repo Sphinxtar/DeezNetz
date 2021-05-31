@@ -123,7 +123,7 @@ def checkDeez():
 	output = []
 	outline = []
 	down = 0
-	firstserve = 0
+	first = 1
 	output.append("<?xml version=\"1.0\"?><host name=\""+hostname+"\""+" stamp=\""+stamp+"\">")
 	tree = ET.parse(file)
 	for elem in tree.iter():
@@ -131,16 +131,12 @@ def checkDeez():
 			continue
 
 		if elem.tag == "service":
-			if firstserve == 0:
-				outline.append("<service>")
-				firstserve = 1
-			else:
-				outline.append("</service><service>")
-			continue
+			del outline[:]
+			outline.append("<service>")
+			down = 0
 
 		if elem.tag == "protocol":
 			outline.append("<protocol>"+str(elem.text)+"</protocol>")
-			continue
 
 		if elem.tag == "url":
 			status = checklink(elem.text)
@@ -155,19 +151,19 @@ def checkDeez():
 				down = 1
 
 		if elem.tag == "type":
-			outline.append("<type>"+str(elem.text)+"</type>")
-			continue
+			outline.append("<type>"+str(elem.text)+"</type></service>")
+			if report > 1 or down > 0:
+				output.append(''.join(outline))
+				del outline[:]
+				down = 0
 
-	outline.append("</service>")
-
-	if down > 0 or report > 1:
-		output.append('\n'.join(outline))
-		del outline[:]
 
 	if report > 0:
 		output.append(diskusage())
 		output.append(memfree())
 	if report == 0:
+		del output[:]
+		output.append("<?xml version=\"1.0\"?><host name=\""+hostname+"\""+" stamp=\""+stamp+"\">")
 		output.append("<status>")
 		if condition != 0:
 			output.append("YELLOW")

@@ -65,6 +65,7 @@ def sweepDeez():
 	return([red,"".join(reddoc),yellow,"".join(yellowdoc),green,"".join(greendoc)])
 
 docs = sweepDeez()
+
 if docs[0] > 0:
 	bg = "red"
 elif docs[2] > 0:
