@@ -1,5 +1,5 @@
 # DeezNetz
-The DeezNetz Network Monitor<br/>
+<b>The DeezNetz Network Monitor</b><br/>
 Better Living With XML/XSLT, Python And JavaScript Via Systemd<br/>
 High Disk Usage and Low Memory Alerts Too!<br/>
 The poor man's network monitor. Boils your status down to:<br/>
