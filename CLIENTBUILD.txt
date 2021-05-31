@@ -8,12 +8,18 @@ $ sudo mkdir /usr/share/deez
 Copy the script that answers the service there
 $ sudo cp checkDeez.py /usr/share/deez/
 
+Copy the script that crawls and creates hostname.xml of urls/ports to monitor 
+$ sudo cp deezcrawl.py /usr/share/deez/
+
+Copy the stylesheet that is used to create the services up/down summary reports.
+$ sudo cp packed.xsl /usr/share/deez/
+
 Create the list of services on `hostname` to check 
 $ sudo ./deezcrawl.py 
 
-See if `hostname`.xml file created by deezcrawl.py exists.
+See if `hostname`.xml file created exists.
 $ ls /usr/share/deez
-`hostname`.xml  checkDeez.py 
+`hostname`.xml  checkDeez.py deezcrawl.py packed.py
 
 Check to see if you need to edit it and it's well formed. Should have an entry for every port or URL to be monitored something like...
 $ xmllint --format butthead.xml 
@@ -29,6 +35,7 @@ $ xmllint --format butthead.xml
 
 Create the client service.
 $ sudo ./deezyall.py
+Check by executing:
 $ ls /ib/systemd/system/deeznetz*
 /lib/systemd/system/deeznetz@.service  /lib/systemd/system/deeznetz.socket
 
@@ -38,7 +45,7 @@ $ sudo systemctl start deeznetz.socket
 $ sudo systemctl status deeznetz.socket
 
 Test the client service is working and all monitored services are up.
-$ wget http://hostname:8142/OK
+$ wget http://yourhostname:8142/OK
 and look in file named OK in your current directory
 or use a browser to the same url. Should get web page with a body of:
 <?xml version="1.0"?><host name="hostname"><status>GREEN</status></host>
@@ -49,4 +56,7 @@ $ sudo firewall-cmd --add-service deeznetz
 $ sudo firewall-cmd --reload
 $ sudo firewall-cmd --list-services
 
-Should be working now!
+Should be working now! There is a header line at the bottom, line 183 in checkDeez.py:
+sys.stdout.write("Access-Control-Allow-Origin: *\r\n");
+the, '*', allows any host from across domains to connect, you should edit this to your domain, google, 'CORS', for information on cross-site scripting errors, especially if you are on a public network. Screen the port 8142 carefully on your firewalls.
+

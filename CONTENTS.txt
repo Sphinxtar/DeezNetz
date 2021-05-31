@@ -1,13 +1,26 @@
 This Is The Deez Netz Network Monitor System
 by Linus Sphinx
+
 --- CLIENT SCRIPTS
-checkDeez.py - answers port 8142, scans deezcrawl.py created configuration file and gives status in XML
-deezyall.py  - creates the client service on 8142 for checkDeez.py to answer with status
-deezcrawl.py - probes all ports/urls on client and writes XML configuration for checkDeez.py to scan
+checkDeez.py - answers port 8142 and scans the deezcrawl.py created configuration XML file and returns status in XML.
+deezcrawl.py - probes all ports/urls on client and writes an XML configuration nnamed `hostname`.xml for checkDeez.py to scan.
+deezyall.py  - creates the client service on 8142 for checkDeez.py to answer on.
+packed.xsl - used to produce summary up/down reports of services/urls montiored.
+
 --- SERVER SCRIPTS
-deeztimer.py - creates system timer/service to fire off sweepDeez.py every 6 minutes give or take a minute
-sweepDeez.py - server that scans deezhosts file entries on port 8142 and builds ReactJS status page
+deeztimer.py - creates system timer/service to fire off sweepDeez.py 
+deezyall.py - installs the systemd services, firewall, entry in /etc/services 
+sweepDeez.py - server that contancts all hosts in deezhosts file on port 8142 and asks if they are 'OK' and builds the status pages on the web server.
+ryg.xsl - formats the red/yellow/green summary web server index page
+colors.xsl - used to build red.html/yellow.html/green.html's
+host.xsl - extract hostname from OK response message
+status.xsl - extract status color from OK response message 
+deezhosts - file of hostnames to monitor one per line
+
 --- DOCS
-deeznetz.html - This is the fine manual in HTML
-README.md - The fine manual summarized in text 
+README.md - Project summary for github
 LICENSE - Apache 2.0 license
+CLIENTBUILD.txt - quickstart client build and configure
+SERVERBUILD.txt - quickstart server build and configure
+deeznetz.html - The is the fine manual in HTML
+

@@ -4,17 +4,42 @@ $ unzip deeznetz.zip
 
 Create the client's work directory.
 $ sudo mkdir /usr/share/deez
+Create a location on the 
+$ sudo mkdir /var/www/html/deez
 
 Copy the script that is run by the timer and sweeps the network there.
 $ sudo cp sweepDeez.py /usr/share/deez/
+Copy the script that is run by sweepDeez connecting to a port if you want to monitor your server too.
+$ sudo cp checkDeez.py /usr/share/deez/
+Copy the script that builds a configuration of ports/urls for checkDeez to check. You can edit your `hostname`.xml to suit, 'xmllint --format `hostname.xml`', will show you what is going to be monitored and what deezcrawl.py found.
+$ sudo cp deezcrawl.py /usr/share/deez/
 
-Create a deezhosts file of hostnames to monitor, one per line.
+Copy the XSLT stylesheets used by sweepDeez and checkDeez to /usr/share/deez:
+colors.xsl - makes green.html/yellow.html/red.html 
+host.xsl - extracts the hostname returned by an OK command
+status.xsl - extracts the RED/YELLOW/GREEN returned by OK command
+packed.xsl - formats the results of an ERR or FULL command
+ryg.xsl - makes the index.html page
+
+Create a deezhosts file of hostnames to monitor, one hostname per line.
 $ sudo vi /usr/share/deez/deezhosts
 
-Create the systemd timer unit to run sweepDeez.py every 5 minutes or so.
+Watch /var/www/html/deez and index.html/red.html/yellow.html/green.html should appear after the sweepDeez.py sweeps. 
+sudo chown -R apache:apache /usr/share/deez /var/www/html
+Add yourself to the group:
+sudo usermod -a -G apache <your login name>
+Set permissions to the directories and scripts/stylesheets:
+sudo chmod -R 0770 /usr/share/deez /var/www/html
+sudo chmod -R 0660 /usr/share/deez/*.xsl 
+sudo chmod -R 0550 /usr/share/deez/*.py
+
+Create and install the systemd service/socket units to run checkDeez.ph when connected. 
+$ sudo ./deezyall.py
+
+Create and install the systemd timer unit to run sweepDeez.py every 15 minutes or so to taste.
 $ sudo ./deeztimer.py
 
-Enable the timer/service and check their status
+Enable the timer and service and check their status
 systemctl enable sweepDeez.service
 systemctl start sweepDeez.service
 systemctl status sweepDeez.service
@@ -22,4 +47,19 @@ systemctl enable sweepDeez.timer
 systemctl start sweepDeez.timer
 systemctl status sweepDeez.timer
 
-Watch /var/www/html and deeznetz.js should appear after the client sweep.
+Check the service locally with wget or your browser at the following url's.
+http://hostname:8142/OK   - should get status of RED, YELLOW or GREEN
+http://hostname:8142/ERR  - should return tables of services down
+http://hostname:8142/FULL - should return everything it knows
+
+Server not hitting it?
+$ sudo firewall-cmd --get-default-zone
+$ sudo firewall-cmd --add-service deeznetz
+$ sudo firewall-cmd --reload
+$ sudo firewall-cmd --list-services
+Should be working now! 
+
+There is a header line at the bottom, line 183 in checkDeez.py:
+sys.stdout.write("Access-Control-Allow-Origin: *\r\n");
+the, '*', allows any host from across domains to connect, you should edit this to your domain, google, 'CORS', for information on cross-site scripting errors, especially if you are on a public network. Screen the deeznetz port 8142 carefully on your firewalls.
+
