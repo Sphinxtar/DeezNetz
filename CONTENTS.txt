@@ -1,7 +1,7 @@
 This Is The Deez Netz Network Monitor System
 by Linus Sphinx
 
-RTFM - The Fine Manual for HTML your server
+--- The Fine Manual In HTML for your server
 deezdoc/* - cp -r deezdoc /var/www/html/deez/
 
 --- CLIENT SCRIPTS
