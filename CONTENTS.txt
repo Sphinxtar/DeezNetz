@@ -1,6 +1,9 @@
 This Is The Deez Netz Network Monitor System
 by Linus Sphinx
 
+RTFM - The Fine Manual for HTML your server
+deezdoc/* - cp -r deezdoc /var/www/html/deez/
+
 --- CLIENT SCRIPTS
 checkDeez.py - answers port 8142 and scans the deezcrawl.py created configuration XML file and returns status in XML.
 deezcrawl.py - probes all ports/urls on client and writes an XML configuration nnamed `hostname`.xml for checkDeez.py to scan.
