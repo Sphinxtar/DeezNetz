@@ -8,4 +8,4 @@ YELLOW: Service on a host is down, clicking brings up a summary of which.<br/>
 GREEN: All systems go.<br/>
 All viewed in your browser. Not tested for public networks.</br>
 HTML deezdoc available online here:<br/>
-https://www.linkedin.com/pulse/deeznetz-network-monitor-linus-crawford-1f/
+deezdoc/deezdoc.html
