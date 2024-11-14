@@ -1,4 +1,4 @@
-# DeezNetz
+# Deez Netz
 <b>The DeezNetz Network Monitor</b><br/>
 Better Living With XML/XSLT, Python And JavaScript Via Systemd<br/>
 High Disk Usage and Low Memory Alerts Too!<br/>
